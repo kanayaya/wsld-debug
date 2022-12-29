@@ -1,3 +1,4 @@
+use log::info;
 use super::config::X11Config;
 use super::util::{connect_stream, either};
 use super::vmsocket::VmSocket;
@@ -8,6 +9,7 @@ use tokio::io::AsyncWriteExt;
 use tokio::net::UnixStream;
 
 async fn handle_stream(mut stream: UnixStream) -> std::io::Result<()> {
+    info!("trying to connect");
     let mut server = VmSocket::connect(CONFIG.service_port).await?;
     server.write_all(b"x11\0").await?;
 
@@ -15,6 +17,7 @@ async fn handle_stream(mut stream: UnixStream) -> std::io::Result<()> {
     let (server_r, server_w) = server.split();
     let a = connect_stream(client_r, server_w);
     let b = connect_stream(server_r, client_w);
+    info!("connected");
     either(a, b).await
 }
 

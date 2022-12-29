@@ -1,6 +1,7 @@
 use std::fs::{self, Permissions};
 use std::io::{Error, Result, Write};
 use std::os::unix::fs::PermissionsExt;
+use log::info;
 use tokio::net::UnixListener;
 
 pub struct X11Lock {
@@ -68,6 +69,7 @@ impl X11Lock {
 
         let socket = UnixListener::bind(&name);
         let _ = std::fs::set_permissions(&name, Permissions::from_mode(0o777));
+        info!("binded!");
         socket
     }
 }
